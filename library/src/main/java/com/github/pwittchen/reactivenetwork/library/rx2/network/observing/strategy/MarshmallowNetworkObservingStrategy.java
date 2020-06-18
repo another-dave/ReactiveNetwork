@@ -77,9 +77,9 @@ import static com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork.L
             .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
             .build();
 
-    manager.registerNetworkCallback(request, networkCallback);
-
-    return connectivitySubject.toFlowable(BackpressureStrategy.LATEST).doOnCancel(new Action() {
+    return connectivitySubject.toFlowable(BackpressureStrategy.LATEST)
+            .doOnSubscribe(__ -> manager.registerNetworkCallback(request, networkCallback))
+            .doOnCancel(new Action() {
       @Override public void run() {
         tryToUnregisterCallback(manager);
         tryToUnregisterReceiver(context);
